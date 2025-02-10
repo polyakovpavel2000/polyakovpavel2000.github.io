@@ -187,78 +187,65 @@
 </div>
 
 <script>
-    document.getElementById('hideToggle').addEventListener('change', function() {
-        const progressDiv = document.querySelector('.progress svg');
-        if (this.checked) {
-            progressDiv.style.display = 'none';
-        } else {
-            progressDiv.style.display = 'block';
+    class ProgressBlock {
+        constructor(progressSelector, trackIndicator, valueInputSelector, animateToggleSelector, hideToggleSelector) {
+            this.progressDiv = document.querySelector(progressSelector);
+            this.indicator = this.progressDiv.querySelector(trackIndicator);
+            this.valueInput = document.querySelector(valueInputSelector);
+            this.animateToggle = document.querySelector(animateToggleSelector);
+            this.hideToggle = document.querySelector(hideToggleSelector);
+
+            this.radius = parseFloat(this.indicator.getAttribute('r'));
+            this.circumference = 2 * Math.PI * this.radius;
+
+            this.init();
         }
-    });
 
-    document.addEventListener("DOMContentLoaded", function() {
-        const valueInput = document.getElementById('valueInput');
-        const indicator = document.querySelector('.progress .indicator');
-        const animateToggle = document.getElementById('animateToggle');
-
-        if (valueInput && indicator && animateToggle) {
-            const radius = parseFloat(indicator.getAttribute('r'));
-            const circumference = 2 * Math.PI * radius;
-
-            // Функция для обновления прогресса
-            const updateProgress = () => {
-                let value = parseInt(valueInput.value) || 0;
-
-                // Ограничение на ввод всех символов, кроме цифр
-                valueInput.addEventListener('keydown', function (e) {
-                    // Разрешаем только цифры (0–9), Backspace, Delete, Tab, Arrow keys, Enter
-                    if (
-                        !e.key.match(/^[0-9]$/) &&
-                        e.key !== 'Backspace' &&
-                        e.key !== 'Delete' &&
-                        e.key !== 'Tab' &&
-                        e.key !== 'ArrowUp' &&
-                        e.key !== 'ArrowDown' &&
-                        e.key !== 'Enter'
-                    ) {
-                        e.preventDefault();
-                    }
-                });
-
-                // Проверяем пределы значений
-                if (value > 100) {
-                    value = 100;
-                    valueInput.value = 100; // Исправляем значение в input
-                } else if (value < 0) {
-                    value = 0;
-                    valueInput.value = 0; // Исправляем значение в input
-                }
-
-                const max = parseInt(valueInput.max) || 100;
-
-                const progress = (1 - value / max) * circumference;
-
-                indicator.style.strokeDasharray = `${circumference}`;
-                indicator.style.strokeDashoffset = `${progress}`;
-            };
-
-            // Функция для включения/выключения анимации
-            const toggleAnimation = () => {
-                if (animateToggle.checked) {
-                    indicator.style.animation = 'rotate-circle 2s linear infinite';
-                } else {
-                    indicator.style.animation = 'none';
-                }
-            };
-
-            // Инициализация начального значения и состояния
-            updateProgress();
-            toggleAnimation();
-
-            // Обработчики событий
-            valueInput.addEventListener('input', updateProgress);
-            animateToggle.addEventListener('change', toggleAnimation);
+        init() {
+            this.updateProgress();
+            this.toggleAnimation();
+            this.addEventListeners();
         }
+
+        addEventListeners() {
+            this.valueInput.addEventListener('input', () => this.updateProgress());
+            this.animateToggle.addEventListener('change', () => this.toggleAnimation());
+            this.hideToggle.addEventListener('change', () => this.toggleVisibility());
+
+            this.valueInput.addEventListener('keydown', (e) => this.validateInput(e));
+        }
+
+        updateProgress() {
+            let value = parseInt(this.valueInput.value) || 0;
+            const max = parseInt(this.valueInput.max) || 100;
+
+            if (value > 100) value = 100;
+            if (value < 0) value = 0;
+            this.valueInput.value = value;
+
+            const progress = (1 - value / max) * this.circumference;
+            this.indicator.style.strokeDasharray = `${this.circumference}`;
+            this.indicator.style.strokeDashoffset = `${progress}`;
+        }
+
+        toggleAnimation() {
+            this.indicator.style.animation = this.animateToggle.checked ? 'rotate-circle 2s linear infinite' : 'none';
+        }
+
+        toggleVisibility() {
+            this.progressDiv.style.display = this.hideToggle.checked ? 'none' : 'block';
+        }
+
+        validateInput(e) {
+            if (!e.key.match(/^[0-9]$/) && !['Backspace', 'Delete', 'Tab', 'ArrowUp', 'ArrowDown', 'Enter'].includes(e.key)) {
+                e.preventDefault();
+            }
+        }
+    }
+
+    // Инициализация
+    document.addEventListener("DOMContentLoaded", () => {
+        new ProgressBlock('.progress svg', '.indicator',  '#valueInput', '#animateToggle', '#hideToggle');
     });
 </script>
 </body>
