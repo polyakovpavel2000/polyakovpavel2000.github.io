@@ -7,35 +7,18 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <style>
-        :root {
-            /*--primary-color: #007bff;*/
-            /*--background-color: #f8f9fa;*/
-            /*--hidden-opacity: 0;*/
-        }
 
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            /*background: var(--background-color);*/
-            /*display: flex;*/
-            /*justify-content: center;*/
-            /*align-items: center;*/
-            /*min-height: 100vh;*/
         }
 
         .container {
-            /*text-align: center;*/
-            /*max-width: 320px;*/
             display: flex;
             min-height: 100vh;
             align-items: center;
             justify-content: space-evenly;
-        }
-
-        .progress, .controls {
-            /*width: 50%;*/
-            /*text-align: center;*/
         }
 
         .progress {
@@ -62,20 +45,14 @@
 
         .progress .indicator {
             stroke: #005dff;
-            /*stroke-linecap: round;*/
             stroke-dasharray: 471;
             stroke-dashoffset: 471;
             transition: stroke-dashoffset 0.5s ease;
             transform-origin: 75px 75px; /* Центр круга для вращения */
-            /*transition: transform 0.5s ease; !* Плавное возвращение в исходное положение *!*/
         }
 
         .controls {
-            /*display: flex;*/
-            /*flex-direction: column;*/
-            /*align-items: center;*/
             width: 160px;
-            /*margin: 0 auto;*/
         }
 
         .controls input[type="number"] {
@@ -84,6 +61,10 @@
             border: 1px solid black;
             height: 24px;
             border-radius: 28% / 50%;
+        }
+
+        input#valueInput:focus {
+            outline: none;
         }
 
         .controls input[type="number"]::-webkit-inner-spin-button,
@@ -165,11 +146,6 @@
             text-align: start;
         }
 
-        /*.hidden {*/
-        /*    !*opacity: var(--hidden-opacity);*!*/
-        /*    pointer-events: none;*/
-        /*}*/
-
         @keyframes rotate-circle {
             from {
                 transform: rotate(0deg);
@@ -182,10 +158,6 @@
         @media (max-width: 420px) {
             .container {
                 flex-direction: column;
-                /*max-width: 568px;*/
-                /*display: flex;*/
-                /*justify-content: space-between;*/
-                /*align-items: center;*/
             }
         }
     </style>
@@ -218,12 +190,11 @@
 
 <script>
     document.getElementById('hideToggle').addEventListener('change', function() {
-        // const progressDiv = document.getElementById('progress');
         const progressDiv = document.querySelector('.progress svg');
         if (this.checked) {
-            progressDiv.style.display = 'none'; // Скрыть
+            progressDiv.style.display = 'none';
         } else {
-            progressDiv.style.display = 'block'; // Показать
+            progressDiv.style.display = 'block';
         }
     });
 
@@ -240,9 +211,18 @@
             const updateProgress = () => {
                 let value = parseInt(valueInput.value) || 0;
 
-                // Ограничение на ввод ".", "-", "+", ","
+                // Ограничение на ввод всех символов, кроме цифр
                 valueInput.addEventListener('keydown', function (e) {
-                    if (['.', '-', ',', '+'].includes(e.key)) {
+                    // Разрешаем только цифры (0–9), Backspace, Delete, Tab, Arrow keys, Enter
+                    if (
+                        !e.key.match(/^[0-9]$/) &&
+                        e.key !== 'Backspace' &&
+                        e.key !== 'Delete' &&
+                        e.key !== 'Tab' &&
+                        e.key !== 'ArrowUp' &&
+                        e.key !== 'ArrowDown' &&
+                        e.key !== 'Enter'
+                    ) {
                         e.preventDefault();
                     }
                 });
