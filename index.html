@@ -25,7 +25,6 @@
             position: relative;
             width: 150px;
             height: 150px;
-            /*margin: 0 auto;*/
         }
 
         .progress svg {
@@ -78,7 +77,6 @@
             align-items: center;
             gap: 30px;
             margin-bottom: 10px;
-
             height: 28px;
             line-height: 28px;
             position: relative;
@@ -86,6 +84,10 @@
             font-size: 14px;
             user-select: none;
             cursor: pointer;
+        }
+
+        .controls label:focus {
+            background-color: transparent;
         }
 
         .controls label .toggle {
@@ -131,11 +133,11 @@
             transform:translateX(28px);
         }
 
-        /* Disabled */
         .controls label input[type=checkbox]:disabled + .toggle {
             filter: grayscale(70%);
             border-color: rgba(0, 0, 0, .1);
         }
+
         .controls label input[type=checkbox]:disabled + .toggle:before {
             background: #eee;
         }
